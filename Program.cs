@@ -1,3 +1,25 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿
+using Sudoku;
+using Sudoku.Extensions;
+using Sudoku.Solvers;
 
-Console.WriteLine("Hello, World!");
+string[] input =
+{
+    "5 3 . . 7 . . . .",
+    "6 . . 1 9 5 . . .",
+    ". 9 8 . . . . 6 .",
+    "8 . . . 6 . . . 3",
+    "4 . . 8 . 3 . . 1",
+    "7 . . . 2 . . . 6",
+    ". 6 . . . . 2 8 .",
+    ". . . 4 1 9 . . 5",
+    ". . . . 8 . . 7 9"
+};
+
+var parsedInput = InputParser.Parse(input);
+
+var solver = new SubGridSolver();
+
+var solution = solver.SolveGrid(parsedInput);
+
+Console.WriteLine(solution.PrettyPrint());
