@@ -2,6 +2,7 @@
 
 using Sudoku.Enums;
 using Sudoku.Models;
+using Sudoku.Validators;
 
 namespace Sudoku.Extensions;
 
@@ -9,7 +10,7 @@ public static class GridExtensions
 {
     public static bool IsSolved(this Grid grid)
     {
-        return grid.SubGrids.All(subGrid => subGrid.Cells.All(cell => cell.Value != CellValue.None));
+        return GridValidator.IsValid(grid);
     }
 
     public static Grid Mutate(this Grid grid, Cell mutatedCellValue)
@@ -75,7 +76,13 @@ public static class GridExtensions
 
         foreach (var cell in cells)
         {
-            stringBuilder.Append($"{(int)cell.Value} | ");
+            stringBuilder.Append($"{(int)cell.Value}");
+
+            if (cell.Column != 8)
+            {
+                stringBuilder.Append(" | ");
+            }
+            
             if (cell.Column == 8)
             {
                 stringBuilder.Append('\n');

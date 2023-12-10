@@ -5,14 +5,16 @@ using Sudoku.Solvers.Abstractions;
 
 namespace Sudoku.Solvers;
 
-public class SubGridSolver : ISolver
+public class DefaultSolver : ISolver
 {
     public Grid SolveGrid(Grid grid)
     {
+        var iterations = 0;
         var allCellValues = Enum.GetValues<CellValue>().Where(cellValue => cellValue != CellValue.None).ToArray();
 
         while (!grid.IsSolved())
         {
+            iterations++;
             var cellsToSolve = grid
                 .SubGrids
                 .Select(subGrid => subGrid.Cells.Where(cell => cell.Value == CellValue.None))
@@ -25,12 +27,8 @@ public class SubGridSolver : ISolver
 
                 if (preOccupiedCellValues.Count == 8)
                 {
-                    Console.WriteLine("Only one value possible for cell with row {0} and column {1}", cellToSolve.Row, cellToSolve.Column);
-
                     var except = allCellValues.Except(preOccupiedCellValues).First();
-
-                    Console.WriteLine("Cell with row {0} and column {1} needs to have value {2}", cellToSolve.Row, cellToSolve.Column, except);
-
+                    
                     var updatedCell = cellToSolve.Mutate(except);
 
                     grid = grid.Mutate(updatedCell);
@@ -38,10 +36,12 @@ public class SubGridSolver : ISolver
             }
         }
         
+        Console.WriteLine("Solving grid took {0} iterations", iterations);
+        
         return grid;
     }
 
-    private HashSet<CellValue> GetPreOccupiedCellValues(Cell currentCell, Grid grid)
+    private static HashSet<CellValue> GetPreOccupiedCellValues(Cell currentCell, Grid grid)
     {
         var valuesInCurrentRow = grid.GetAllFilledValuesInRow(currentCell.Row);
         var valuesInCurrentColumn = grid.GetAllFilledValuesInColumn(currentCell.Column);

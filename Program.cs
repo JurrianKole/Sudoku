@@ -1,5 +1,4 @@
-﻿
-using Sudoku;
+﻿using Sudoku;
 using Sudoku.Extensions;
 using Sudoku.Solvers;
 
@@ -18,7 +17,7 @@ string[] input =
 
 var parsedInput = InputParser.Parse(input);
 
-var solver = new SubGridSolver();
+var solver = new DefaultSolver();
 
 var solution = solver.SolveGrid(parsedInput);
 
