@@ -1,8 +1,10 @@
-﻿using System.Text;
+﻿using Spectre.Console;
 
 using Sudoku.Enums;
 using Sudoku.Models;
 using Sudoku.Validators;
+
+using Grid = Sudoku.Models.Grid;
 
 namespace Sudoku.Extensions;
 
@@ -63,38 +65,24 @@ public static class GridExtensions
             .ToHashSet();
     }
 
-    public static string PrettyPrint(this Grid grid)
+    public static void PrettyPrint(this Grid grid)
     {
-        var stringBuilder = new StringBuilder();
+        var table = new Table();
 
-        var cells = grid
-            .SubGrids
-            .SelectMany(cell => cell.Cells)
-            .OrderBy(cell => cell.Row)
-            .ThenBy(cell => cell.Row)
-            .ToArray();
+        table.HideHeaders();
+        table.Border(TableBorder.Horizontal);
 
-        foreach (var cell in cells)
+        table.AddColumns(Enumerable.Range(1, 9).Select(i => i.ToString()).ToArray());
+
+        var rows = grid.SubGrids.SelectMany(subGrid => subGrid.Cells).GroupBy(cell => cell.Row);
+
+        foreach (var row in rows)
         {
-            stringBuilder.Append($"{(int)cell.Value}");
+            var stringValues = row.Select(cell => (int)cell.Value).Select(cellValue => cellValue.ToString()).ToArray();
 
-            if (cell.Column != 8)
-            {
-                stringBuilder.Append(" | ");
-            }
-            
-            if (cell.Column == 8)
-            {
-                stringBuilder.Append('\n');
-
-                if (cell.Row != 8)
-                {
-                    var lineSeparator = new string(Enumerable.Repeat("-   ", 9).SelectMany(c => c).ToArray());
-                    stringBuilder.Append(lineSeparator + "\n");
-                }
-            }
+            table.AddRow(stringValues);
         }
 
-        return stringBuilder.ToString();
+        AnsiConsole.Write(table);
     }
 }
