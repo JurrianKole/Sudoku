@@ -11,4 +11,9 @@ public static class SubGridExtensions
 
         return allValidCellValues.All(subGrid.Cells.Select(cell => cell.Value).Contains);
     }
+
+    public static HashSet<CellValue> GetAllValuesInSubGrid(this SubGrid subGrid)
+    {
+        return subGrid.Cells.Where(cell => cell.Value != CellValue.None).Select(cell => cell.Value).ToHashSet();
+    }
 }

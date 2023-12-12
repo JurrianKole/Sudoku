@@ -1,13 +1,21 @@
-﻿using Sudoku;
-using Sudoku.Extensions;
-using Sudoku.Solvers;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
-var input = TestInput.EasyPeasyWikipediaExample;
+using Sudoku;
+using Sudoku.Solvers.Abstractions;
+using Sudoku.Solvers.DefaultSolver;
+using Sudoku.Solvers.DefaultSolver.Strategies;
 
-var parsedInput = InputParser.Parse(input);
+using var host = Host
+    .CreateDefaultBuilder(args)
+    .ConfigureServices(
+        services =>
+        {
+            services.AddHostedService<Startup>();
+            
+            services.AddTransient<IStrategy, SubGridAndColumnAndRowMissingValueStrategy>();
+            services.AddTransient<ISolver, DefaultSolver>();
+        })
+    .Build();
 
-var solver = new DefaultSolver();
-
-var solution = solver.SolveGrid(parsedInput);
-
-solution.PrettyPrint();
+await host.StartAsync();

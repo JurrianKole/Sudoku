@@ -34,6 +34,14 @@ public static class GridExtensions
         return new Grid(subGrids);
     }
 
+    public static int GetCellValueCount(this Grid grid, CellValue cellValue)
+    {
+        return grid
+            .SubGrids
+            .SelectMany(subGrid => subGrid.Cells)
+            .Count(cell => cell.Value == cellValue);
+    }
+    
     public static HashSet<CellValue> GetAllFilledValuesInRow(this Grid grid, int row)
     {
         return grid
@@ -53,24 +61,13 @@ public static class GridExtensions
             .Select(cell => cell.Value)
             .ToHashSet();
     }
-
-    public static HashSet<CellValue> GetAllFilledValuesInSubGrid(this Grid grid, SubGridName subGridName)
-    {
-        return grid
-            .SubGrids
-            .First(subGrid => subGrid.SubGridName == subGridName)
-            .Cells
-            .Where(cell => cell.Value != CellValue.None)
-            .Select(cell => cell.Value)
-            .ToHashSet();
-    }
-
+    
     public static void PrettyPrint(this Grid grid)
     {
         var table = new Table();
 
         table.HideHeaders();
-        table.Border(TableBorder.Horizontal);
+        table.Border(TableBorder.Ascii);
 
         table.AddColumns(Enumerable.Range(1, 9).Select(i => i.ToString()).ToArray());
 
@@ -78,7 +75,7 @@ public static class GridExtensions
 
         foreach (var row in rows)
         {
-            var stringValues = row.Select(cell => (int)cell.Value).Select(cellValue => cellValue.ToString()).ToArray();
+            var stringValues = row.Select(cell => (int)cell.Value).Select(cellValue => cellValue == 0 ? string.Empty : cellValue.ToString()).ToArray();
 
             table.AddRow(stringValues);
         }
